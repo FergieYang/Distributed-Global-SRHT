@@ -1,0 +1,38 @@
+\begin{remark}[Post-processing: pruning zero rows and the $\sqrt{s}$ rescaling]
+\label{rem:postprocess}
+Algorithm~\ref{alg:example} implements subsampling via a diagonal mask
+$S=\mathrm{diag}(\xi_1,\dots,\xi_m)$ (applied blockwise as $I_K\otimes S$),
+so the intermediate sketch has the same ambient dimension $m$ but contains many
+zero rows.  Removing zero rows is therefore a purely computational step:
+it converts the masked sketch into the usual SRHT form that explicitly stores
+only the retained rows (equivalently, replacing the mask by a row-selection operator
+that selects the indices $\{j:\xi_j=1\}$).
+
+The final $\sqrt{s}$ factor is the standard SRHT normalization under Bernoulli
+row sampling.  If each row is kept with probability $1/s$ (independently), then
+$\sqrt{s}$ makes the sketch second-moment preserving in expectation; see
+Lemma~\ref{lem:srht-unbiased}.
+\end{remark}
+
+\begin{lemma}[Unbiased SRHT scaling under Bernoulli masking]
+\label{lem:srht-unbiased}
+Assume $H_m$ is orthonormal and $D$ is a diagonal Rademacher matrix.
+Let $S=\mathrm{diag}(\xi_1,\dots,\xi_m)$ with $\xi_j\sim\mathrm{Bernoulli}(1/s)$ i.i.d.,
+and define $A := \sqrt{s}\, S H_m D$.  Then
+\[
+\mathbb{E}\!\left[A^\top A\right] = I_m,
+\qquad\text{and hence}\qquad
+\mathbb{E}\!\left[\|A x\|_2^2\right] = \|x\|_2^2 \ \ \text{for all } x\in\mathbb{R}^m.
+\]
+\end{lemma}
+
+\begin{proof}
+Since $S^\top S=S$ and $\mathbb{E}[S]=\frac{1}{s}I_m$,
+\[
+\mathbb{E}[A^\top A]
+= s\, D^\top H_m^\top \,\mathbb{E}[S]\, H_m D
+= D^\top H_m^\top I_m H_m D
+= I_m,
+\]
+using orthonormality of $H_m$ and $D^\top D=I_m$.
+\end{proof}

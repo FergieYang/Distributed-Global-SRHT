@@ -1,0 +1,303 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\beps}{\boldsymbol{\varepsilon}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\RE}{\mathrm{RE}}
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\OLS}{\mathrm{OLS}}
+
+\title{Pseudocode and Logic for the DGSRHT Simulation Experiment\\[4pt]
+\large Explaining \texttt{run\_experiment\_DGSRHT} and the Four Plot Lines}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+%% ============================================================
+\section{Overview}
+
+The simulation evaluates the \textbf{Distributed Sketching Efficiency} of two
+distributed OLS schemes---\emph{DGSRHT} and \emph{Uniform Sampling}---as a
+function of the number of working machines~$K'$.
+For each scheme we plot two curves:
+\begin{enumerate}[label=(\roman*)]
+  \item An \textbf{empirical} curve: the Relative Efficiency (RE) estimated by
+        averaging over $R$ independent noise draws.
+  \item A \textbf{theoretical} curve: the RE predicted by the MSE formula
+        $\MSE = \sigma^2 \tr\!\bigl((\bX^\top \bX)^{-1}\bigr)$, applied to a
+        single representative design matrix.
+\end{enumerate}
+This gives the \textbf{four lines} in the plot.
+
+%% ============================================================
+\section{Setup and Notation}
+
+\begin{center}
+\begin{tabular}{cl}
+\toprule
+Symbol & Meaning \\
+\midrule
+$n$    & Total number of observations across all $k$ clients \\
+$k$    & Number of clients in the DGSRHT pipeline \\
+$p$    & Feature dimension \\
+$K'$   & Number of machines used in the \emph{post-sketching} distributed OLS \\
+$s$    & Subsampling factor ($s = 1/\text{proportion}$) \\
+$R$    & Number of Monte Carlo repetitions (noise resamples) \\
+$\bbeta_{\mathrm{true}}$ & Ground-truth coefficient vector \\
+$\Sigma_1$ & Random SPD covariance for GMM component 1 \\
+$\Sigma_2 = c\,\Sigma_1$ & Covariance for GMM component 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Linear model.}
+Each client~$i$ holds a fixed design matrix $\bX_i \in \mathbb{R}^{m_i \times p}$
+(drawn once from a two-component GMM). The response is:
+\[
+  \bY_i = \bX_i \bbeta_{\mathrm{true}} + \beps_i,
+  \qquad \beps_i \sim \mathcal{N}(\mathbf{0},\, \bI_{m_i}).
+\]
+Crucially, $\bX_i$ is \textbf{fixed} across all $R$ repetitions; only$\beps_i$ is redrawn.
+\section{Full Pseudocode}
+
+\begin{algorithm}[H]
+\caption{\textsc{run\_experiment\_DGSRHT}: Empirical + Theoretical RE}
+\label{alg:main}
+\begin{algorithmic}[1]
+
+\Statex \textbf{Input:} $n, k, p, \text{weight}, \mu_1, \mu_2, c, s, K'_{\text{list}}, R, \text{base\_seed}$
+
+\Statex
+\Statex \hrulefill
+\Statex \textbf{Phase A: Generate the fixed design (done once)}
+\Statex \hrulefill
+
+\State Draw $\bbeta_{\mathrm{true}} \sim \mathcal{N}(\mathbf{0}, \bI_p)$
+\State Draw random SPD covariance $\Sigma_1$;\quad set $\Sigma_2 = c\,\Sigma_1$
+\State Draw heterogeneous client sizes $(m_1, \dots, m_k)$ via multinomial (with $\sum m_i = n$)
+\State Compute $m_{\mathrm{loc}} = \text{next\_power\_of\_two}(\max_i m_i)$
+
+\For{$i = 1, \dots, k$}
+  \State Sample $\bX_i^{\mathrm{raw}} \in \mathbb{R}^{m_i \times p}$ from the two-component GMM
+  \State Pad: $\bX_i^{\mathrm{pad}} = \begin{bmatrix} \bX_i^{\mathrm{raw}} \\ \mathbf{0}_{(m_{\mathrm{loc}} - m_i) \times p} \end{bmatrix}$
+\EndFor
+
+\Statex
+\Statex \hrulefill
+\Statex \textbf{Phase B: Monte Carlo loop (only $\beps$ changes)}
+\Statex \hrulefill
+
+\State Initialize accumulators: $\MSE^{\OLS}_{\mathrm{unif}},\; \MSE^{\OLS}_{\mathrm{DG}},\; \MSE_{\mathrm{unif}}[K'],\; \MSE_{\mathrm{DG}}[K']$
+
+\For{$r = 1, \dots, R$}
+
+  \Statex \quad\textcolor{blue}{\% --- Fresh noise ---}
+  \For{$i = 1, \dots, k$}
+    \State Draw $\beps_i^{(r)} \sim \mathcal{N}(\mathbf{0}, \bI_{m_i})$
+    \State $\bY_i^{\mathrm{raw}} \gets \bX_i^{\mathrm{raw}}\,\bbeta_{\mathrm{true}} + \beps_i^{(r)}$
+    \State Pad $\bY_i^{\mathrm{pad}}$ with zeros to length $m_{\mathrm{loc}}$
+  \EndFor
+
+  \Statex
+  \Statex \quad\textcolor{blue}{\% --- DGSRHT pipeline (produces sketched data) ---}
+  \State $(\bX^*,\, \bY^*) \gets \textsc{DGSRHT}\!\bigl(\{\bX_i^{\mathrm{pad}}\}, \{\bY_i^{\mathrm{pad}}\},\, m_{\mathrm{loc}},\, s\bigr)$
+  \Statex \quad\quad\quad\quad\emph{(local shuffle $\to$ local RHT $\to$ shared mask $\to$ server Hadamard mixing)}
+
+  \Statex
+  \Statex \quad\textcolor{blue}{\% --- Uniform baseline (same compression rate) ---}
+  \State $(\bX^{\mathrm{unif}},\, \bY^{\mathrm{unif}}) \gets \textsc{UniformSubsample}\!\bigl(\{\bX_i^{\mathrm{raw}}\}, \{\bY_i^{\mathrm{raw}}\},\, s\bigr)$
+
+  \Statex
+  \Statex \quad\textcolor{blue}{\% --- Centralized OLS on each sketched dataset ---}
+  \State $\hat\bbeta^{\OLS}_{\mathrm{unif}} \gets (\bX^{\mathrm{unif}\top} \bX^{\mathrm{unif}})^{-1} \bX^{\mathrm{unif}\top} \bY^{\mathrm{unif}}$
+  \State $\hat\bbeta^{\OLS}_{\mathrm{DG}} \gets (\bX^{*\top} \bX^{*})^{-1} \bX^{*\top} \bY^{*}$
+  \State $\MSE^{\OLS}_{\mathrm{unif}} \mathrel{+}= \|\hat\bbeta^{\OLS}_{\mathrm{unif}} - \bbeta_{\mathrm{true}}\|^2$
+  \State $\MSE^{\OLS}_{\mathrm{DG}} \mathrel{+}= \|\hat\bbeta^{\OLS}_{\mathrm{DG}} - \bbeta_{\mathrm{true}}\|^2$
+
+  \Statex
+  \Statex \quad\textcolor{blue}{\% --- Distributed OLS for each $K'$ ---}
+  \For{each $K'$ in $K'_{\text{list}}$}
+    \State Randomly partition $(\bX^{\mathrm{unif}}, \bY^{\mathrm{unif}})$ into $K'$ blocks
+    \State Compute local OLS on each block, average: $\bar\bbeta^{\mathrm{unif}}_{K'} = \frac{1}{K'}\sum_{j=1}^{K'} \hat\bbeta_j$
+    \State $\MSE_{\mathrm{unif}}[K'] \mathrel{+}= \|\bar\bbeta^{\mathrm{unif}}_{K'} - \bbeta_{\mathrm{true}}\|^2$
+
+    \Statex
+    \State Randomly partition $(\bX^*, \bY^*)$ into $K'$ blocks
+    \State Compute local OLS on each block, average: $\bar\bbeta^{\mathrm{DG}}_{K'} = \frac{1}{K'}\sum_{j=1}^{K'} \hat\bbeta_j$
+    \State $\MSE_{\mathrm{DG}}[K'] \mathrel{+}= \|\bar\bbeta^{\mathrm{DG}}_{K'} - \bbeta_{\mathrm{true}}\|^2$
+  \EndFor
+
+\EndFor
+
+\Statex
+\Statex \hrulefill
+\Statex \textbf{Phase C: Compute Relative Efficiencies}
+\Statex \hrulefill
+
+\Statex
+\Statex \textcolor{blue}{\% --- Empirical RE (Lines 1 \& 3 in the plot) ---}
+\For{each $K'$}
+  \State $\RE^{\mathrm{emp}}_{\mathrm{unif}}(K') \gets \dfrac{\MSE^{\OLS}_{\mathrm{unif}} / R}{\MSE_{\mathrm{unif}}[K'] / R}$
+  \qquad\emph{(Line 1: Uniform empirical)}
+
+  \Statex
+  \State $\RE^{\mathrm{emp}}_{\mathrm{DG}}(K') \gets \dfrac{\MSE^{\OLS}_{\mathrm{DG}} / R}{\MSE_{\mathrm{DG}}[K'] / R}$
+  \qquad\emph{(Line 3: DGSRHT empirical)}
+\EndFor
+
+\Statex
+\Statex \textcolor{blue}{\% --- Theoretical RE (Lines 2 \& 4 in the plot) ---}
+\Statex \emph{Use the design matrices from the \textbf{first} repetition only.}
+\State $\MSE^{\OLS,\mathrm{th}}_{\mathrm{unif}} \gets \sigma^2\,\tr\!\bigl((\bX^{\mathrm{unif}\top}_1 \bX^{\mathrm{unif}}_1)^{-1}\bigr)$
+\State $\MSE^{\OLS,\mathrm{th}}_{\mathrm{DG}} \gets \sigma^2\,\tr\!\bigl((\bX^{*\top}_1 \bX^{*}_1)^{-1}\bigr)$
+
+\For{each $K'$}
+  \State Randomly partition $\bX^{\mathrm{unif}}_1$ into $K'$ blocks $\to \bX^{(1)}, \dots, \bX^{(K')}$
+  \State $\MSE^{\mathrm{avg,th}}_{\mathrm{unif}}(K') \gets \displaystyle\sum_{j=1}^{K'} \frac{\sigma^2}{K'^2}\,\tr\!\bigl((\bX^{(j)\top}\bX^{(j)})^{-1}\bigr)$
+  \State $\RE^{\mathrm{th}}_{\mathrm{unif}}(K') \gets \dfrac{\MSE^{\OLS,\mathrm{th}}_{\mathrm{unif}}}{\MSE^{\mathrm{avg,th}}_{\mathrm{unif}}(K')}$
+  \qquad\emph{(Line 2: Uniform theoretical)}
+
+  \Statex
+  \State Randomly partition $\bX^{*}_1$ into $K'$ blocks $\to \bX^{(1)}, \dots, \bX^{(K')}$
+  \State $\MSE^{\mathrm{avg,th}}_{\mathrm{DG}}(K') \gets \displaystyle\sum_{j=1}^{K'} \frac{\sigma^2}{K'^2}\,\tr\!\bigl((\bX^{(j)\top}\bX^{(j)})^{-1}\bigr)$
+  \State $\RE^{\mathrm{th}}_{\mathrm{DG}}(K') \gets \dfrac{\MSE^{\OLS,\mathrm{th}}_{\mathrm{DG}}}{\MSE^{\mathrm{avg,th}}_{\mathrm{DG}}(K')}$
+  \qquad\emph{(Line 4: DGSRHT theoretical)}
+\EndFor
+
+\Statex
+\State \Return $\RE^{\mathrm{emp}}_{\mathrm{unif}},\; \RE^{\mathrm{emp}}_{\mathrm{DG}},\; \RE^{\mathrm{th}}_{\mathrm{unif}},\; \RE^{\mathrm{th}}_{\mathrm{DG}}$
+
+\end{algorithmic}
+\end{algorithm}
+
+%% ============================================================
+\section{What Each Line in the Plot Represents}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{cp{10.5cm}}
+\toprule
+\textbf{Line} & \textbf{What it computes} \\
+\midrule
+
+1. Uniform empirical &
+$\RE^{\mathrm{emp}}_{\mathrm{unif}}(K')
+= \dfrac{\frac{1}{R}\sum_{r=1}^R \|\hat\bbeta^{\OLS}_{\mathrm{unif},r} - \bbeta_{\mathrm{true}}\|^2}
+        {\frac{1}{R}\sum_{r=1}^R \|\bar\bbeta^{\mathrm{unif}}_{K',r} - \bbeta_{\mathrm{true}}\|^2}$
+\newline
+Numerator = average MSE of \emph{centralized} OLS on the uniformly subsampled data.
+\newline
+Denominator = average MSE of \emph{distributed} OLS (averaged estimator across $K'$ machines) on the same data.
+\\
+
+2. Uniform theoretical &
+$\RE^{\mathrm{th}}_{\mathrm{unif}}(K')
+= \dfrac{\sigma^2\,\tr\!\bigl((\bX^{\mathrm{unif}\top}\bX^{\mathrm{unif}})^{-1}\bigr)}
+        {\sum_{j=1}^{K'} \frac{\sigma^2}{K'^2}\,\tr\!\bigl((\bX_j^{\top}\bX_j)^{-1}\bigr)}$
+\newline
+Uses the OLS variance formula applied to a \emph{single} design matrix, partitioned once.
+\\
+
+3. DGSRHT empirical &
+Same as Line~1, but the data is $(\bX^*, \bY^*)$ produced by the DGSRHT pipeline
+(local shuffle + RHT + shared mask + server Hadamard mixing).
+\\
+
+4. DGSRHT theoretical &
+Same as Line~2, but applied to the DGSRHT-transformed design $\bX^*$.
+\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Interpretation of RE.}
+\[
+  \RE(K') = \frac{\MSE_{\text{centralized}}}{\MSE_{\text{distributed with } K' \text{ machines}}}
+\]
+\begin{itemize}
+  \item $\RE = 1$ means no efficiency loss from distributing.
+  \item $\RE < 1$ means the distributed estimator has \emph{higher} MSE than centralized OLS
+        (efficiency loss due to partitioning).
+  \item Smaller $\RE$ = worse distributed performance.
+\end{itemize}
+As $K'$ increases, more machines means smaller local datasets, which inflates the
+local OLS variance, so RE decreases.
+
+%% ============================================================
+\section{Why the Theoretical Lines Are Not Perfectly Smooth}
+\label{sec:not-straight}
+
+One may expect the theoretical curve to be a smooth, deterministic function of~$K'$.
+In our implementation, \textbf{it is not}, for the following reason:
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+  \item The theoretical RE for each~$K'$ is computed by calling
+        \texttt{Relative\_Efficiency\_theory}, which internally calls
+        \texttt{partition\_matrix\_not\_necessary\_divisable}.
+
+  \item That function \textbf{randomly shuffles} the row indices of the design
+        matrix and splits them into~$K'$ blocks.
+
+  \item Because this random shuffle is done \textbf{independently for each~$K'$},
+        each value $\RE^{\mathrm{th}}(K')$ is based on a \emph{different}
+        random partition.
+
+  \item The MSE formula
+        $\sum_{j=1}^{K'} \frac{1}{K'^2}\,\tr\!\bigl((\bX_j^\top \bX_j)^{-1}\bigr)$
+        is sensitive to the specific rows that land in each block.
+        Different random partitions yield different block compositions, hence
+        different MSE values.
+\end{enumerate}
+
+\paragraph{In short:}
+The theoretical line uses a \textbf{single random partition per~$K'$} (not averaged
+over many partitions), and each~$K'$ draws its own independent partition.
+This introduces partition-to-partition variability, making the curve jagged
+rather than smooth.
+
+\paragraph{How to make it smoother (optional).}
+If a smooth theoretical curve is desired, one could average the theoretical RE
+over multiple random partitions for each~$K'$:
+\[
+  \overline{\RE}^{\,\mathrm{th}}(K')
+  = \frac{1}{T} \sum_{t=1}^{T} \RE^{\mathrm{th}}_t(K'),
+\]
+where each $\RE^{\mathrm{th}}_t$ uses a different random partition.
+With $T = 50$--$100$, the theoretical curve would become nearly smooth.
+This was not done in the current code to keep computation light, but it is a
+straightforward extension.
+
+%% ============================================================
+\section{Summary of the Simulation Logic}
+
+\begin{enumerate}
+  \item \textbf{Fix $\bX$}: generate GMM design matrices for all $k$ clients \emph{once}.
+  \item \textbf{Resample $\beps$}: for $r = 1, \dots, R$, draw fresh Gaussian noise
+        and compute $\bY = \bX\bbeta + \beps$.
+  \item \textbf{Sketch}: apply the DGSRHT pipeline (or uniform subsampling) to get
+        compressed data.
+  \item \textbf{Estimate}: run centralized OLS and distributed OLS (for each~$K'$)
+        on the compressed data.
+  \item \textbf{Compute RE}: ratio of centralized MSE to distributed MSE, averaged
+        over the $R$ noise draws (empirical lines) or computed from the design-matrix
+        trace formula (theoretical lines).
+\end{enumerate}
+
+The key design choice is that \textbf{$\bX$ is fixed and only $\beps$ varies},
+which is the standard OLS simulation protocol: we estimate the \emph{conditional}
+MSE $\mathbb{E}_\varepsilon[\|\hat\bbeta - \bbeta\|^2 \mid \bX]$.
+
+\end{document}

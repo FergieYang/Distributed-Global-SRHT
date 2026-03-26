@@ -1,0 +1,169 @@
+
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{Major Correctness Issues (with Precise Places to Fix)\\[2pt]
+\large Surgical Edits for RHT + Uniform Partitioning}
+\author{Prepared by ``ChengQi''}
+\date{\today}
+
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\opnorm}[1]{\left\lVert #1 \right\rVert_{2}}
+\newcommand{\frnorm}[1]{\left\lVert #1 \right\rVert_{\mathrm{F}}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\I}{\mathrm{I}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\R}{\mathbb{R}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{assumption}{Assumption}
+
+\begin{document}
+\maketitle
+
+\section{Major correctness issues (with precise places to fix)}
+
+\begin{enumerate}[leftmargin=*,label=\textbf{(\arabic*)}]
+
+\item \textbf{Concavity/equality misuse around (2.4)--(2.5).}
+You define \(g(M)=1/\tr(M^{-1})\) and assert it is concave because \(\tr(M^{-1})\) is convex and ``trace is linear''; then you claim an equality
+\[
+g\!\left(\sum_i w_i M_i\right)=\sum_i w_i g(M_i)\quad\text{for equal weights.}
+\]
+In general, \(1/(\text{convex})\) is \emph{not} concave, and the equality is unjustified.
+\medskip\\
+\emph{Fix:} Drop the concavity/equality route. Use the known optimal-weight statement (Dobriban--Sheng): \(w_i^\star\propto 1/a_i\) where \(a_i=\tr\!\big[(X_i^\top X_i)^{-1}\big]\). If the \(a_i\) are (approximately) equal across blocks, then equal weights are near-optimal. RHT is intended to encourage this equalization (variance/leverage flattening).
+
+\item \textbf{Claimed independence in ``Uniform Sampling Partition'' (without replacement).}
+Saying rows are ``independent'' because you shuffle once and split is incorrect: this is sampling \emph{without} replacement (negative dependence).
+\medskip\\
+\emph{Fix:} Replace ``independent'' with ``uniform without replacement.'' When concentration is needed, use without-replacement matrix inequalities (Serfling/Bernstein-type) or conservative couplings to with-replacement bounds.
+
+\item \textbf{Matrix Chernoff applied to the wrong objects + dependence introduced by RHT.}
+You set \(W_r:=Y_r Y_r^\top\) and write \(\tilde X^\top \tilde X=\sum_r W_r\). But \(Y_r\) is a \(1\times p\) row; \(Y_r Y_r^\top\) is scalar, not \(p\times p\). The correct outer product is \(W_r=Y_r^\top Y_r\in\mathbb{R}^{p\times p}\).
+Moreover, after \(\tilde X=HDX\), each row \(Y_r\) depends on the same Rademacher diagonal \(D\), so \(\{W_r\}\) are \emph{not} independent, yet the Chernoff step assumes independence.
+\medskip\\
+\emph{Fix:} (i) Correct to \(W_r=Y_r^\top Y_r\). (ii) Do not apply matrix Chernoff to \(\sum_r Y_r^\top Y_r\) after the \(HD\) mixing. If you want independence, work with the original i.i.d.\ row outer products \(\{X_j^\top X_j\}\), or switch to sampling-without-replacement/SRHT embedding bounds that explicitly handle the \(HD\) step and the row subsampling.
+
+\item \textbf{i.i.d.\ claims for \(\eta_j=h_{ij}d_j x_j\).}
+Labeling \(\eta_j\) ``i.i.d.\ since \(d_j\) are i.i.d.'' is incorrect: the scales \(\lvert x_j\rvert\) vary with \(j\). The \(\eta_j\) are independent but not identically distributed (unless \(\lvert x_j\rvert\) are equal). Using the i.i.d.\ claim to invoke Hoeffding/CLT is therefore unjustified.
+\medskip\\
+\emph{Fix:} Use Lindeberg--Feller CLT for independent, non-identically distributed summands. Your asymptotic normality statement with variance \(\|x\|_2^2/n\) holds under a Lindeberg condition.
+
+\item \textbf{Sub-Gaussian norm scaling errors.}
+The Hadamard entry contributes a factor \(1/\sqrt{n}\), so \(\|\eta_i\|_{\psi_2}\le \kappa/\sqrt{n}\) (not \(\kappa/n\)). Propagate this correctly: for coordinates \((Y_r)_j\), 
+\[
+\|(Y_r)_j\|_{\psi_2}^2 \le C\sum_i \|\eta_i\|_{\psi_2}^2 = C \sum_i \frac{\kappa^2}{n} = C\kappa^2.
+\]
+This impacts later sub-exponential bounds and the choice \(t=p\).
+\medskip\\
+\emph{Fix:} Correct \(\|\eta_i\|_{\psi_2}\) to \(\kappa/\sqrt{n}\) and carry the squares properly throughout.
+
+\item \textbf{Over-loose row-norm bound and the choice \(t=p\).}
+Bounding \(\max_r \|Y_r\|_2^2\) via coordinate-wise sub-exponential tails with \(t=p\) plus a union bound over \(n\) yields dimensionally loose control that feeds into your \(\lambda_{\min}\) bounds.
+\medskip\\
+\emph{Fix:} Use a standard SRHT/subspace-embedding deviation: with \(\ell=n/K\) rows per block and mild coherence/stable-rank control,
+\begin{equation}
+\label{eq:srht}
+\left\|\frac{K}{n}\tilde X_i^\top \tilde X_i - \frac{1}{n}\tilde X^\top \tilde X\right\|_2
+\;\lesssim\;
+\sqrt{\frac{\log p}{\ell}}\quad\text{w.h.p.}
+\end{equation}
+This yields clean, dimensionally correct control for \(\lambda_{\min}(A)\) and for the closeness \(A\) to its mean.
+
+\item \textbf{``Almost sure'' convergence from a single high-probability bound.}
+Claiming a.s.\ convergence after (4.5) is overstated: you would need summability/Borel--Cantelli across \(n\). One term in your linear-regime discussion even scales like \(2\theta n e^{-\iota/\theta}\), which does not vanish.
+\medskip\\
+\emph{Fix:} Downgrade to ``with high probability (over \(D\) and the row sampling)'' under sublinear \(p(n)\). If you want a.s.\ convergence, add a lemma showing tail-probability summability under explicit growth/parameter conditions.
+\end{enumerate}
+
+\section{Why (4.5) is not reliable as stated}
+Your (4.5) states that, with probability at least \(1-(\text{three terms})\),
+\[
+\big|\tr(A^{-1})-\tr(B^{-1})\big| \;\le\;
+\frac{K^2\,\chi\,p\sqrt{p}}{(1-\sigma)^2(\lambda^\star)^2}\sqrt{\frac{\log n}{n^3}}\,.
+\]
+This rests on three fragile ingredients:
+\begin{itemize}[leftmargin=*]
+\item \emph{Min-eigenvalue bounds for \(A,B\)} obtained via a matrix Chernoff argument assuming independence of post-RHT row outer products; this independence does not hold.
+\item \emph{A Frobenius error \(\frnorm{A-B}\)} derived from coordinate-wise sub-exponential tails with \(t=p\) and a union bound over \(p^2\) entries, inflating the \(p^{3/2}\) rate---avoidable via spectral-embedding control.
+\item \emph{Trace difference inequality} \( |\tr(A^{-1})-\tr(B^{-1})|=|\tr(A^{-1}(A-B)B^{-1})| \le \sqrt{p}\,\|A^{-1}\|_2\,\frnorm{A-B}\,\|B^{-1}\|_2 \),
+whose usefulness collapses if the eigenvalue controls are unjustified.
+\end{itemize}
+Hence, (4.5) should be downgraded or re-proven using tools aligned with your sampling scheme.
+
+\section{Minimal surgery to keep the direction and fix the logic}
+\begin{enumerate}[leftmargin=*,label=\textbf{(\Alph*)}]
+\item \textbf{Replace the concavity block (2.4)--(2.5).} Remove ``\(g\) is concave / equality''. State instead: Equal weighting is optimal when \(a_i\) are equal; RHT aims to make the \(a_i\) close; hence equal weighting is near-optimal.
+\item \textbf{Re-prove closeness of local and global Grams under RHT + uniform partitioning.}
+Keep the identities \(\tilde X^\top \tilde X=X^\top X\) and \(\E[\tilde X_i^\top \tilde X_i]=\frac{1}{K}\E[\tilde X^\top \tilde X]\).
+For deviations, invoke the SRHT embedding bound \eqref{eq:srht}. This directly yields, by perturbation of inverses and a spectral gap,
+\[
+\big|\tr(A^{-1})-\tr(B^{-1})\big| \;\le\; C\,\eps\,\tr(B^{-1}),\qquad
+\eps \asymp \sqrt{\frac{\log p}{\ell}}.
+\]
+\item \textbf{Fix the sub-Gaussian scaling and the i.i.d.\ language.} Use \(\|\eta_i\|_{\psi_2}\le \kappa/\sqrt{n}\) and Lindeberg--Feller where asymptotics are needed.
+\item \textbf{Correct \(W_r\) and dimensional references.} Use \(W_r=Y_r^\top Y_r\in\R^{p\times p}\).
+\item \textbf{Temper the final convergence mode.} Replace ``probability 1'' with ``with high probability,'' unless a summability lemma is supplied.
+\end{enumerate}
+
+\section{A conservative, standard replacement for (4.5)}
+\begin{assumption}[SRHT embedding and spectrum]\label{ass:srht}
+There exist constants \(C,c>0\) such that, for each block \(i\) of size \(\ell=n/K\),
+\eqref{eq:srht} holds with probability at least \(1-2e^{-c\ell}-p^{-c}\);
+moreover, \(\lambda_{\min}\!\big(\frac{1}{n}\tilde X^\top \tilde X\big)\ge \lambda_0>0\) with high probability.
+\end{assumption}
+
+\begin{theorem}[Relative trace-inverse closeness]\label{thm:main}
+Under Assumption~\ref{ass:srht}, with probability at least \(1-2e^{-c\ell}-p^{-c}\),
+\begin{equation}
+\label{eq:main-trace}
+\left|\tr\big(A^{-1}\big)-\tr\big(B^{-1}\big)\right|
+\;\le\;
+C\,\eps\,\tr\big(B^{-1}\big),\qquad
+\eps = C\sqrt{\frac{\log p}{\ell}}\,.
+\end{equation}
+In particular, the relative error contracts like \(\sqrt{K\log p/n}\).
+\end{theorem}
+
+\noindent\textit{Proof sketch.}
+Write \(A^{-1}-B^{-1}=A^{-1}(B-A)B^{-1}\) so
+\(|\tr(A^{-1}-B^{-1})| \le \sqrt{p}\,\opnorm{A^{-1}}\,\frnorm{A-B}\,\opnorm{B^{-1}}\).
+By \eqref{eq:srht} and \(\opnorm{A-B}\le \frnorm{A-B}\), we get
+\(\opnorm{A-B}\lesssim \eps\,\opnorm{(1/n)\tilde X^\top \tilde X}\).
+The spectral gap \(\lambda_0\) implies \(\opnorm{A^{-1}},\opnorm{B^{-1}}\lesssim 1/\lambda_0\), and \(\tr(B^{-1})\asymp p/\lambda_0\). Combine and absorb constants.
+
+\section{Quick ``diff'' you can apply to the draft}
+\begin{itemize}[leftmargin=*]
+\item Delete/replace the ``\(g\) is concave'' + equality block near (2.4)--(2.5).
+\item Change ``independent'' \(\to\) ``uniform without replacement'' in the partition remark.
+\item Fix \(W_r:=Y_r^\top Y_r\) and correct all dimensional references.
+\item Change ``i.i.d.'' \(\to\) ``independent (not identical)'' for \(\eta_j\); use Lindeberg--Feller.
+\item Correct the \(\psi_2\) scaling and propagate the factors.
+\item Replace the ad-hoc row-norm union bound by \eqref{eq:srht}; use it to control \(\opnorm{A-B}\).
+\item Downgrade ``a.s.'' to ``w.h.p.'' (or add a summability lemma).
+\end{itemize}
+
+\section{What to plot/compute next (to verify against simulations)}
+\begin{enumerate}[leftmargin=*,label=\textbf{(\arabic*)}]
+\item \textbf{Block-wise } \(a_i=\tr\!\big[(X_i^\top X_i)^{-1}\big]\) \textbf{ before/after RHT.}
+Histograms/boxplots across \(i=1,\dots,K\). Expect: after RHT the spread shrinks markedly (equalization).
+
+\item \textbf{Convergence of } \(\displaystyle \frac{|\tr(A^{-1})-\tr(B^{-1})|}{\tr(B^{-1})}\) \textbf{ vs.\ \(n\).}
+For fixed \(p\) and for sublinear \(p(n)\), expect a slope consistent with \(\sqrt{K\log p/n}\) under SRHT conditions.
+
+\item \textbf{Effect of \(K\) (fixed \(n,p\)).}
+With \(\ell=n/K\), the relative error should increase like \(\sqrt{K}\) (via \(\eps\)).
+
+\item \textbf{Uniform-only vs.\ RHT+uniform.}
+For a two-cluster GMM, uniform-only should show larger spread in \(a_i\) and worse relative efficiency; RHT+uniform should largely fix both.
+\end{enumerate}
+
+\end{document}
