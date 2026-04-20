@@ -2,17 +2,19 @@
 
 % ---------- Fonts & micro-typography ----------
 \usepackage[T1]{fontenc}
-\usepackage{newtxtext,newtxmath} % Times-like text + math (matches the sample feel)
+\usepackage{newtxtext}            % Times-like text
 \usepackage{microtype}
 \usepackage[ruled,vlined]{algorithm2e}
 
 % ---------- Page layout ----------
 \usepackage[margin=1in]{geometry} % 1in margins; adjust if needed
+\setlength{\headheight}{14pt}     % satisfy fancyhdr requirement
 \usepackage{setspace}
 \setstretch{1.05} % subtle tightening
 
 % ---------- Math & theorems ----------
 \usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{newtxmath}            % Times-like math (must load AFTER amsthm/amssymb)
 \numberwithin{equation}{section}
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
@@ -23,6 +25,8 @@
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem{thm}[theorem]{Theorem}
+\newtheorem{cor}[theorem]{Corollary}
 
 % Common operators (optional but tidy)
 \DeclareMathOperator{\E}{\mathbb{E}}
@@ -39,7 +43,7 @@
 \setlist{itemsep=2pt,topsep=4pt}
 
 % ---------- Cross-references ----------
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
 \usepackage[nameinlink,capitalise,noabbrev]{cleveref}
 
 % ---------- Bibliography (biblatex) ----------
@@ -48,6 +52,7 @@
   doi=true,url=false,eprint=false
 ]{biblatex}
 \addbibresource{sample.bib}
+\addbibresource{biblio.bib}
 
 % ---------- Authorship block ----------
 \usepackage{authblk}
@@ -69,6 +74,8 @@
 \newcommand{\journalname}{}     % e.g., "Journal of ..."
 \newcommand{\paperrange}{}      % e.g., "1--17"
 \newcommand{\paperdoi}{}        % e.g., "https://doi.org/...."
+\newcommand{\articletype}{Preprint}
+\newcommand{\versiondate}{\today}
 
 % Running heads (edit these two lines)
 \newcommand{\runningtitle}{RHTDistributedRegression}
@@ -95,9 +102,8 @@
 }
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE,RO]{\thepage}
-\fancyhead[LO]{\small\textsc{\runningtitle}}
-\fancyhead[RE]{\small\textsc{\runningauthor}}
+\fancyhead[R]{\thepage}
+\fancyhead[L]{\small\textsc{\runningtitle}}
 \renewcommand{\headrulewidth}{0.4pt}
 % ---------- Title helpers ----------
 \newcommand{\keywords}[1]{\noindent\textbf{Keywords}: #1}
@@ -136,7 +142,7 @@ This has been studied much by researchers in the field of distributed machine le
 However, it is good to see that Dobriban and Liu\cite{dobriban2019asymptoticssketchingsquaresregression} have discussed many results of distributed sketching in OLS estimation via all kinds of efficiencies, which I think would be a further study regarding our research here.
 
 In this article, our main research contribution is to identify the specific distribution of the data matrix $\mathbf{X}$ where the relative efficiency of OLS estimation, i.e., the error ratio of global OLS estimator to distributed OLS estimator by averaging local OLS estimators, would decrease drastically when the sampling method is just the equally partitioned uniform sampling from the "$Section 3.2$ Finite sample results" of the paper by Dobriban and Sheng\cite{dobriban2022distributedlinearregressionaveraging}.
-And we contribute to show that the Randomized Hadamard Transform (RHT) here could improve the relative efficiency of OLS estimation by flattening the variance of the local gram matrix for each machine with equal weight for averaging, thus helping us save the time for adjusting th weight accordingly from the result of \ref{eq:2.6}. Finally, our most important contribution is to rigorouly proving that the relative efficiency of OLS estimation with equal-weighted partitions after Randomized Hadamard Transform (RHT) could achieve the dream efficiency of 1 when the number of rows $n$ tends to infinity and the number of columns $p$ also tends to infinity but is the sublinear growth of $n$ larger than the logarithmatic growth of $n$.\ref{corollary:main}
+And we contribute to show that the Randomized Hadamard Transform (RHT) here could improve the relative efficiency of OLS estimation by flattening the variance of the local gram matrix for each machine with equal weight for averaging, thus helping us save the time for adjusting th weight accordingly from the result of \ref{eq:2.7}. Finally, our most important contribution is to rigorouly proving that the relative efficiency of OLS estimation with equal-weighted partitions after Randomized Hadamard Transform (RHT) could achieve the dream efficiency of 1 when the number of rows $n$ tends to infinity and the number of columns $p$ also tends to infinity but is the sublinear growth of $n$ larger than the logarithmatic growth of $n$.\ref{corollary:main}
 We could also intepretate this idea differently, that is the difference of $\operatorname{tr}[(\tilde{\mathbf{X}}_i^{\top}\tilde{\mathbf{X}}_i)^{-1}]$ and $\operatorname{tr}[(\frac{1}{K}\tilde{\mathbf{X}}^{\top}\tilde{\mathbf{X}})^{-1}]$ converges to $0$ at the rate of $\mathcal{O}(\sqrt{p^{3}\frac{\log n}{n^{3}}})$\ref{eq:4.5} as $n$ tends to be approaching infinity for $p$ satisfying sublinear growth of $n$ larger than logarithmatic growth of $n$, meaning that the local gram matrix after Randomized Hadamard Transform (RHT) is well stablized.
 
 In short, we skip the dirty work of adjusting the weight for each local OLS estimator and just take the average of all local OLS estimators with equal weight $\frac{1}{K}$ for $K$ machines by utilizing the Randomized Hadamard Transform (RHT) to flatten the variance of the local gram matrix for each machine.
@@ -183,7 +189,7 @@ We denote as $M(\hat{\beta}_{\text{\footnotesize \textit{dist}}}) = \mathbb{E}||
 where $\hat{\beta}_{\text{\footnotesize \textit{dist}}}$ is the distributed estimator of $\beta$.
 Thus the relative efficiency is defined by Lemma~\ref{lem:finiteresults} as $E(\mathbf{X}_1,\dots,\mathbf{X}_K) = \frac{M(\hat{\beta})}{M(\hat{\beta}_{\text{\footnotesize \textit{dist}}})}$.
 
-Firstly, we will talk about why we choose to uniformly partition these machines and what is the case if we don't do RHT here, and what kind of $E(\mathbf{I}_p,\mathbf{X}_1,...,\mathbf{X}_K)$ we could achieve, then we will discuss that if we use RHT before doing uniform sampling in partitions, we should not adjust $w_i$ and just take average by $\frac{1}{K}$. (Lemma~\ref{lem:concave})
+Firstly, we will talk about why we choose to uniformly partition these machines and what is the case if we don't do RHT here, and what kind of $E(\mathbf{I}_p,\mathbf{X}_1,...,\mathbf{X}_K)$ we could achieve, then we will discuss that if we use RHT before doing uniform sampling in partitions, we should not adjust $w_i$ and just take average by $\frac{1}{K}$. (Lemma~\ref{lemma:expectation})
 
 Note: this paper discuss the situation of infinitly high dimention, where $n$ could be as large as infinity and $p$ satisfies being the sublinear growth of $n$ that is larger than logarithmatic growth of $n$, which means $p$ could also approaches $\infty$ being a smaller level of infinity than $n$.
 \begin{remark}[Growth Conditions for Parameter $p(n)$]
@@ -205,11 +211,11 @@ Now this is our main result of this paper, that is the relative efficiency of OL
 
   And $\mathbf{\tilde{X}}_{1}, \mathbf{\tilde{X}}_{2}, \ldots, \mathbf{\tilde{X}}_{K}$ are the partitioned machine submatrices after being Randomzied Hadamard Transformed (RHT) from Remark~\ref{remark:sampling}.
 
-  Then, based on the \ref{eq:2.3} result of Lemma~\ref{lem:finiteresults}, we have the following corollary:
+  Then, based on the \ref{eq:2.4} result of Lemma~\ref{lem:finiteresults}, we have the following corollary:
   \[
     \lim_{n\to\infty}\mathbb{E}(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K) = 1
   \]
-  as long as the condition of \ref{eq:2.8} is satisfied.
+  as long as the condition of Remark~\ref{remark:sublinear} is satisfied.
 \end{corollary}
 \subsection{Our focus on proving better relative efficiency[main focus]}
 We first give the finite sample results of Dobriban and Sheng \cite{dobriban2022distributedlinearregressionaveraging} from their paper's section $\S$3.2 as our lemma \ref{lem:finiteresults} here.
@@ -219,9 +225,9 @@ We first give the finite sample results of Dobriban and Sheng \cite{dobriban2022
 
     Let \(\mathbf{X}\in\mathbb{R}^{n\times p}\) be the assumed full rank matrix and $M(\hat{\beta}) = \mathbb{E}||\beta - \hat{\beta}||^2$ be the expected Mean Square Error of OLS estimation.
     
-    Here the relative efficiency is defined as 
+    Here the relative efficiency is defined as
     \[
-    E(\mathbf{X}_1,\dots,\mathbf{X}_K) = \frac{M(\hat{\beta})}{M(\hat{\beta}_{\text{\footnotesize \textit{dist}}})},
+    E(\mathbf{X}_1,\dots,\mathbf{X}_K) = \frac{M(\hat{\beta})}{M(\hat{\beta}_{\text{\footnotesize \textit{dist}}})},\tag{2.1} \label{eq:2.1}
     \]
     where \({\mathbf{X}}_{1}, \ldots, {\mathbf{X}}_{K}\) are the partitioned submatrices as described in Remark~\ref{remark:sampling}.
 
@@ -229,7 +235,7 @@ We first give the finite sample results of Dobriban and Sheng \cite{dobriban2022
     \begin{enumerate}
     \item The mean–squared error of the global OLS estimator is
           \[
-            M(\hat\beta)=\operatorname{tr}\!\bigl[(\mathbf{X}^{\top}\mathbf{X})^{-1}\bigr]\tag{2.1} \label{eq:2.1}
+            M(\hat\beta)=\operatorname{tr}\!\bigl[(\mathbf{X}^{\top}\mathbf{X})^{-1}\bigr]\tag{2.2} \label{eq:2.2}
           \]
     \item Partition the data into \(K\) blocks \(\mathbf{X}_1,\dots,\mathbf{X}_K\),
           compute local OLS estimates \(\hat\beta_{i}\), and aggregate via
@@ -239,7 +245,7 @@ We first give the finite sample results of Dobriban and Sheng \cite{dobriban2022
           \[
             M\!\bigl(\hat\beta_{\mathrm{dist}}\bigr)=
             \sum_{i=1}^{K}w_{i}^{2}\,
-            \operatorname{tr}\!\bigl[(\mathbf{X}_{i}^{\top}\mathbf{X}_{i})^{-1}\bigr]\tag{2.2} \label{eq:2.2}
+            \operatorname{tr}\!\bigl[(\mathbf{X}_{i}^{\top}\mathbf{X}_{i})^{-1}\bigr]\tag{2.3} \label{eq:2.3}
           \]
     \item The choice
           \(w_{i}\propto 1/\operatorname{tr}\!\bigl[(\mathbf{X}_{i}^{\top}\mathbf{X}_{i})^{-1}\bigr]\)
@@ -248,7 +254,7 @@ We first give the finite sample results of Dobriban and Sheng \cite{dobriban2022
             E(\mathbf{X}_{1},\dots,\mathbf{X}_{K})=
             \operatorname{tr}\!\bigl[(\mathbf{X}^{\top}\mathbf{X})^{-1}\bigr]\;
             \sum_{i=1}^{K}
-            \frac{1}{\operatorname{tr}\!\bigl[(\mathbf{X}_{i}^{\top}\mathbf{X}_{i})^{-1}\bigr]}\tag{2.3} \label{eq:2.3}
+            \frac{1}{\operatorname{tr}\!\bigl[(\mathbf{X}_{i}^{\top}\mathbf{X}_{i})^{-1}\bigr]}\tag{2.4} \label{eq:2.4}
           \]
     \end{enumerate}
     \end{lemma}
@@ -260,7 +266,7 @@ The formula for each adjusted optimal weight on each machine is given by below, 
     w_i^{\star}
       =\frac{\displaystyle 1/a_i}
          {\displaystyle\sum_{j=1}^{K}1/a_j},
-      \qquad i=1,\dots,K,\tag{2.4} \label{eq:2.4}
+      \qquad i=1,\dots,K,\tag{2.5} \label{eq:2.5}
   \]
 where \(a_i\) is denoted as:
 \[ 
@@ -271,19 +277,19 @@ But the problem is that equal weighted partitions could not achieve the optimal 
 Now our main contribution in this paper is to theoretically prove that after applying Randomized Hadamard Transform (RHT) to the original data matrix $\mathbf{X}$ before partitioning, we have the following result that for each machine $i = 1,2,\ldots,K$ (Section 4):
 \[
 \lim_{n\to\infty,p\to\infty}\operatorname{tr}\bigl[(\tilde{\mathbf{X}}_i^{\top}\tilde{\mathbf{X}}_i)^{-1}\bigr]
-  = \operatorname{tr}\bigl[\bigl(\tfrac{1}{K}(\tilde{\mathbf{X}}^{\top}\tilde{\mathbf{X}})\bigr)^{-1}\bigr] \tag{2.5} \label{eq:2.5}
+  = \operatorname{tr}\bigl[\bigl(\tfrac{1}{K}(\tilde{\mathbf{X}}^{\top}\tilde{\mathbf{X}})\bigr)^{-1}\bigr] \tag{2.6} \label{eq:2.6}
 \]
 where $n$ is the number of rows of the transformed data matrix $\mathbf{\tilde{X}}$ and $p$ is the number of columns of the transformed data matrix $\mathbf{\tilde{X}}$, which satisfies Remark~\ref{remark:sublinear}. And this is asymptotically true when $n$ and $p$ tends to infinity.
 
-This means $a_1 = a_2 = \ldots = a_K = \operatorname{tr}\bigl[\bigl(\tfrac{1}{K}(\tilde{\mathbf{X}}^{\top}\tilde{\mathbf{X}})\bigr)^{-1}\bigr]$ where $\mathbf{X}_i$ is replaced by $\mathbf{\tilde{X}}_i$ after RHT in $a_i$. And thus by \ref{eq:2.4}, we have $w_i^{\star} = \frac{1}{K}$ for each machine $i = 1,2,\ldots,K$. Plug this into \ref{eq:2.3}, we have:
+This means $a_1 = a_2 = \ldots = a_K = \operatorname{tr}\bigl[\bigl(\tfrac{1}{K}(\tilde{\mathbf{X}}^{\top}\tilde{\mathbf{X}})\bigr)^{-1}\bigr]$ where $\mathbf{X}_i$ is replaced by $\mathbf{\tilde{X}}_i$ after RHT in $a_i$. And thus by \ref{eq:2.5}, we have $w_i^{\star} = \frac{1}{K}$ for each machine $i = 1,2,\ldots,K$. Plug this into \ref{eq:2.4}, we have:
 \[
-E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K) = \frac{\operatorname{tr}\!\bigl[(\frac{1}{K}\mathbf{\tilde{X}}^{\top}\mathbf{\tilde{X}})^{-1}\bigr]} {{\operatorname{tr}\!\bigl[(\mathbf{\tilde{X}}_i^{\top}\mathbf{\tilde{X}}_i)^{-1}\bigr]}} \to 1 \tag{2.6} \label{eq:2.6}
+E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K) = \frac{\operatorname{tr}\!\bigl[(\frac{1}{K}\mathbf{\tilde{X}}^{\top}\mathbf{\tilde{X}})^{-1}\bigr]} {{\operatorname{tr}\!\bigl[(\mathbf{\tilde{X}}_i^{\top}\mathbf{\tilde{X}}_i)^{-1}\bigr]}} \to 1 \tag{2.7} \label{eq:2.7}
 \]
 where $i$ could be any number from $1$ to $K$ since we have garanteed that \(a_1 = a_2 = \cdots = a_K\). And this is the exactly the result we want to illustrate in Corollary~\ref{corollary:main}.
 
-Considering that the relative efficiency \(E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K)\) is always less than 1 because the expected MSE error of distributed OLS estimator is always larger than that of global OLS estimator, we could conclude from \ref{eq:2.5} and \ref{eq:2.6} that under the proposed equal averaged weight partition after RHT, we have
+Considering that the relative efficiency \(E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K)\) is always less than 1 because the expected MSE error of distributed OLS estimator is always larger than that of global OLS estimator, we could conclude from \ref{eq:2.6} and \ref{eq:2.7} that under the proposed equal averaged weight partition after RHT, we have
 \[
-E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K) \to 1 \quad \text{if} \quad \operatorname{tr}\!\bigl[(\mathbf{\tilde{X}}_i^{\top}\mathbf{\tilde{X}}_i)^{-1}\bigr] \to \operatorname{tr}\!\bigl[(\frac{1}{K}\mathbf{\tilde{X}}^{\top}\mathbf{\tilde{X}})^{-1}\bigr]\tag{2.6} \label{eq:2.6}
+E(\mathbf{\tilde{X}}_1,\ldots,\mathbf{\tilde{X}}_K) \to 1 \quad \text{if} \quad \operatorname{tr}\!\bigl[(\mathbf{\tilde{X}}_i^{\top}\mathbf{\tilde{X}}_i)^{-1}\bigr] \to \operatorname{tr}\!\bigl[(\frac{1}{K}\mathbf{\tilde{X}}^{\top}\mathbf{\tilde{X}})^{-1}\bigr]\tag{2.8} \label{eq:2.8}
 \]
 In other words, we could substitutedly prove that the difference between \(\operatorname{tr}\!\bigl[(\mathbf{\tilde{X}}_i^{\top}\mathbf{\tilde{X}}_i)^{-1}\bigr]\) and \(\operatorname{tr}\!\bigl[(\frac{1}{K}\mathbf{\tilde{X}}^{\top}\mathbf{\tilde{X}})^{-1}\bigr]\) converges to 0 at a specific rate as number of rows \(n\) approaches infinity after Randomized Hadamard Transform (RHT) has been applied to the original dataset, which is shown in \ref{eq:4.5}.
 
@@ -459,7 +465,7 @@ Our distributed sketching method differs from (Pilanci, 2014\cite{pilanci2014ran
 
 2. We compute the equal-weight parallel averaging of local OLS estimators, whereas (Pilanci, 2014\cite{pilanci2014randomizedsketchesconvexprograms}) focus on the exact minimizer of globally sketched least-squares objective.
 \subsection{The chosen Gaussian Mixture Model (GMM) distribution}
-\begin{defin}
+\begin{definition}
   \label{def:gmm}
   Let $\mathbf{X}_{j,\ast}\in\mathbb R^{p}$ be a generic row of the data matrix $\mathbf X\in\mathbb R^{n\times p}$.
   Assume $\{\mathbf{X}_{j,\ast}\}_{j=1}^{n}$ are i.i.d.\ with mixture density
@@ -493,7 +499,7 @@ Our distributed sketching method differs from (Pilanci, 2014\cite{pilanci2014ran
   \endgroup
   Hence each row is drawn from $\mathcal N_{p}(\boldsymbol 0,\Sigma)$ with probability $a_{1}$ and from
   $\mathcal N_{p}(\boldsymbol\mu_{2},c\Sigma)$ with probability $a_{2}$.
-  \end{defin}
+  \end{definition}
 
 Now our targeted distribution has been defined, and we will prove in the following Lemma~\ref{lemma:expectation} that there is a direct equalization between the expectation of the local gram matrix after RHT Sampling and
 the expectation of the local gram matrix after Uniform Sampling both for the same partitioned machine index $i = 1,2,\ldots,K$
@@ -525,7 +531,7 @@ Thanks to Prof. Tropp for his research on Subsampled Randomized Hadamard Transfo
 These contents have helpfully connected sub-exponential norms and sub-gaussian norms.
 
 \begin{enumerate}
-\item We will prove that $\lim\limits_{n\to\infty}\mathbb{E}(\tilde{\mathbf{X}}_1,\ldots,\tilde{\mathbf{X}}_K) = 1$ (Corollary \ref{corollary:main}), when the condition of \ref{eq:2.7} is satisfied, that is the weight for each local OLS estimator is simply $\frac{1}{K}$ for each machine with index $i = 1,2,\ldots,K$.
+\item We will prove that $\lim\limits_{n\to\infty}\mathbb{E}(\tilde{\mathbf{X}}_1,\ldots,\tilde{\mathbf{X}}_K) = 1$ (Corollary \ref{corollary:main}), when the condition of \ref{eq:2.8} is satisfied, that is the weight for each local OLS estimator is simply $\frac{1}{K}$ for each machine with index $i = 1,2,\ldots,K$.
 
 \end{enumerate}
 \section{Proof of Corollary \ref{corollary:main} (MAIN RESULT)}
@@ -1338,7 +1344,7 @@ As long as i.i.d. is satisfied for $\mathbf{\eta}_j$, we could apply the central
   Under the central limit theorem of Lindeberg form taking on $\mathbf{\eta}_{j}$ which is i.i.d., we have:
 
   \[
-  \mathbf{y}_{i} \xrightarrow{\;d\;} \mathcal N\left(0,\frac{\|\mathbf{x}\|_2^2}{n}\right)\tag{6.5}\label{eq:6.6}
+  \mathbf{y}_{i} \xrightarrow{\;d\;} \mathcal N\left(0,\frac{\|\mathbf{x}\|_2^2}{n}\right)\tag{6.5}\label{eq:6.5}
   \]
 
   as long as
@@ -1408,7 +1414,7 @@ Thus when you do eigenvalue decomposition on $\mathbf{\tilde{X}}^{\top}\mathbf{\
       mean-squared error
       \[
         \mathbb E\bigl\|\hat\beta-\beta\bigr\|_{2}^{2}
-          =\operatorname{tr}\!\bigl[(\mathbf{X}^{\top}\mathbf{X})^{-1}\bigr].\ref{eq:2.1}
+          =\operatorname{tr}\!\bigl[(\mathbf{X}^{\top}\mathbf{X})^{-1}\bigr].\ref{eq:2.2}
       \]
 
       \medskip
@@ -1437,7 +1443,7 @@ Thus when you do eigenvalue decomposition on $\mathbf{\tilde{X}}^{\top}\mathbf{\
       so the distributed mean-squared error is
       \[
         \mathbb E\bigl\|\hat\beta_{\mathrm{dist}}(w)-\beta\bigr\|_{2}^{2}
-          =\sum_{i=1}^{k}w_i^{2}a_i .\ref{eq:2.2}
+          =\sum_{i=1}^{k}w_i^{2}a_i .\ref{eq:2.3}
       \]
       \medskip
       \textit{Choosing the weights.}
@@ -1494,7 +1500,7 @@ Thus when you do eigenvalue decomposition on $\mathbf{\tilde{X}}^{\top}\mathbf{\
            \sum_{i=1}^{k}
            \frac{1}{\operatorname{tr}\!\bigl[(\mathbf{X}_i^{\top}\mathbf{X}_i)^{-1}\bigr]}
       \end{aligned}
-      \ref{eq:2.3}
+      \ref{eq:2.4}
       \]
 
       Thus all three relative efficiency formulas are proved for Lemma~\ref{lem:finiteresults}.
@@ -1733,7 +1739,121 @@ This implies Lemma~\ref{lem:asymptotic-normality} \eqref{eq:6.6} is satisfied.
 \end{appendix}
 
 
-\section{Experimental results}
+\section{Experimental Results}
+
+In this section we demonstrate experimental results that verify the theoretical predictions of Corollary~\ref{corollary:main}. The goal is to emphasize by comparison that our proposed DGSRHT algorithm (Algorithm~\ref{alg:example}) preserves near-unit relative efficiency under equal-weight averaging as the number of partition machines $K'$ grows, whereas the uniform sampling baseline (Remark~\ref{remark:sampling}) suffers substantial efficiency loss under the same simulated heterogeneous data.
+
+\subsection{Heterogeneous Data Setup}
+\label{sec:setup}
+
+As aggregation, we fix total sample size $n=30{,}000$, feature dimension $p=200$. The choice of $n$ and $p$ here satisfies the dimensional condition of Corollary~\ref{corollary:main} (Remark~\ref{remark:sublinear}), which serves as the finitte-sample approximation for our high-dimensional theoretical garantee. We select number of original clients $K=16$, and subsampling factor $s=4$ (both are the power of 2 as required in Algorithm~\ref{alg:example}). The aggregated dataset across clients is generated from the GMM in Definition~\ref{def:gmm} under a fully heterogeneous case: each client $i$ has its own distinctive GMM parameters, drawn independently as follows:
+\begin{align}
+  a_{1,i} &\sim \mathrm{Beta}(8,2),
+    \qquad a_{2,i} = 1 - a_{1,i}, \nonumber\\[3pt]
+  \mu_{1,i} &= \mu_1 + \xi_{1,i},
+    \qquad \mu_{2,i} = \mu_2 + \xi_{2,i},
+    \qquad \xi_{1,i},\,\xi_{2,i}\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,1),
+    \nonumber\\[3pt]
+  \Sigma_{1,i} &= \Sigma_1 + \tfrac{1}{p}\,B_i B_i^{\top} + 10^{-3}I_p,
+    \qquad B_i\in\mathbb{R}^{p\times p},\;
+    (B_i)_{jk}\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,1),
+    \nonumber\\[3pt]
+  c_i &= 10\cdot\exp(\zeta_i),
+    \qquad \zeta_i\sim\mathcal{N}(0,\,0.5),
+    \nonumber
+\end{align}
+where the global mean anchors are set to $\mu_1=0$ and $\mu_2=5$ for the two mixture components respectively. Specifically, each client's mixing weight $a_{1,i}$ is centered near the global value $0.8$ with moderate difference generated by the corresponding Beta distribution, its component means $\boldsymbol\mu_{1,i}$ and $\boldsymbol\mu_{2,i}$ are shifted from the global means by independent Gaussian noise, its base covariance $\Sigma_{1,i}$ is perturbed by a scaled Wishart-type additive term, and its second-component covariance inflation factor $c_i$ is log-normally distributed with median~$10$.
+
+Each client's rows are then sampled from its own two-component mixture:
+\[
+  \mathbf{X}_{j,*}^{(i)} \;\sim\;
+  a_{1,i}\,\mathcal{N}\!\bigl(\mu_{1,i}\mathbf{1}_p,\;\Sigma_{1,i}\bigr)
+  \;+\;
+  a_{2,i}\,\mathcal{N}\!\bigl(\mu_{2,i}\mathbf{1}_p,\;c_i\,\Sigma_{1,i}\bigr),
+  \qquad j=1,\ldots,m_i.
+\]
+This overall parameter choice produces heterogeneity between clients in all distributional parameters---weights, means, covariances, and scaling factors---while preserving the two-cluster GMM structure of Definition~\ref{def:gmm} within each client.
+
+Client sample sizes are drawn as $m_i = 1 + z_i$, where $(z_1,\ldots,z_K)\sim\mathrm{Multinomial}(n-K,\,p_1,\ldots,p_K)$ with softmax probabilities $p_i = \exp(\lambda_i)/\sum_{j}\exp(\lambda_j)$ and $\lambda_i\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,1)$, guaranteeing $m_i\ge 1$ and $\sum_i m_i = n$; the resulting partition is unbalanced.
+The true coefficient vector $\beta\in\mathbb{R}^p$ is drawn once from $\mathcal{N}(0,I_p)$ and shared across all clients. Each client's response is generated locally as $Y_i = X_i\beta + \varepsilon_i$ with $\varepsilon_i\sim\mathcal{N}(0,I_{m_i})$.
+The DGSRHT pipeline (Algorithm~\ref{alg:example}) is then applied to produce the afterwards transformed global client matrix $\tilde{\mathbf{X}}_\star$ and response $\tilde{\mathbf{Y}}_\star$, which are subsequently partitioned across $K'$ working machines for distributed OLS as in Algorithm~\ref{alg:example2}.
+As a baseline, we compare against uniform sampling (Remark~\ref{remark:sampling}): each client independently selects $r_i = \lfloor m_i/s \rfloor$ rows uniformly at random from its local data $(\mathbf{X}_{\mathrm{raw},i},\,\mathbf{Y}_{\mathrm{raw},i})$, and the selected rows are stacked and passed through the same distributed OLS procedure (Algorithm~\ref{alg:example2}).
+All results are averaged over $R=50$ independent repetitions with fresh noise realizations; the design matrix $X$ is held fixed.
+
+\subsection{Quantitative prediction}
+
+Corollary~\ref{corollary:main} predicts that $E(\tilde{\mathbf{X}}_1,\ldots,\tilde{\mathbf{X}}_{K'})\to 1$ as $n\to\infty$ under the growth conditions of Remark~\ref{remark:sublinear}. For our finite-sample parameters, we evaluate a design-conditional theoretical benchmark from \eqref{eq:2.4}: given one realized DGSRHT design, compute each block's $\operatorname{tr}[(\tilde{\mathbf{X}}_{\star,i}^\top\tilde{\mathbf{X}}_{\star,i})^{-1}]$ and form the RE via \eqref{eq:2.4}. This benchmark allows us to separate the finite-sample theory--experiment gap from Monte Carlo variance.
+
+\subsection{Results}
+
+Figure~\ref{fig:re-full} plots the relative efficiency against the number of working machines $K'\in\{1,\ldots,30\}$ for both DGSRHT and uniform sampling, each shown as an empirical curve (averaged over $R=50$ trials) alongside its design-conditional theoretical counterpart.
+
+Two findings stand out. First, the DGSRHT relative efficiency remains close to $1.0$ across the entire range of $K'$, with empirical values staying above $0.95$ even at $K'=30$. The empirical curve closely tracks the theoretical benchmark, confirming that the Gram-matrix stabilization predicted by \eqref{eq:2.6} holds at this sample size. Second, the uniform sampling baseline degrades sharply: its RE falls below $0.5$ by $K'\approx 10$ and continues toward $0.1$--$0.2$ at $K'=30$. This collapse reflects the heterogeneous Gram-matrix effect described in Section~2.3---without the variance-flattening action of the Hadamard transform, the local Gram matrices $\mathbf{X}_i^\top\mathbf{X}_i$ vary substantially across machines, and equal-weight averaging incurs a large penalty relative to the optimal weights of \eqref{eq:2.5}.
+
+A closer inspection of Figure~\ref{fig:re-full} reveals a third, subtler finding: \textbf{the uniform sampling curves (empirical and theoretical) overlap almost exactly, whereas the DGSRHT curves, though both stable, exhibit a persistent gap of roughly 2--5\% for large $K'$, with the empirical RE sitting closer to $1$ than the theoretical benchmark.} We now explain why.
+
+\paragraph{Why the uniform curves match exactly.}
+Recall that the design matrix $\mathbf{X}$ is generated once and held fixed across all $R$ repetitions (Section~\ref{sec:setup}).
+For uniform sampling, the baseline procedure selects $r_i = m_i/s$ rows from each client's \emph{fixed} row pool $\mathbf{X}_{\mathrm{raw},i}$ at every repetition; only the row \emph{indices} change.
+Because each client contributes a large fraction ($1/s = 1/4$) of its fixed rows, the subsampled Gram matrix concentrates tightly around a deterministic quantity:
+\[
+  \mathbb{E}_{S_i}\bigl[X_{\mathrm{sel},i}^{\top}X_{\mathrm{sel},i}\bigr]
+  = \frac{r_i}{m_i}\,X_{\mathrm{raw},i}^{\top}X_{\mathrm{raw},i}
+  = \frac{1}{s}\,X_{\mathrm{raw},i}^{\top}X_{\mathrm{raw},i},
+\]
+so the total $X_{\mathrm{uniform}}^{\top}X_{\mathrm{uniform}} \approx \frac{1}{s}\sum_{i} X_{\mathrm{raw},i}^{\top}X_{\mathrm{raw},i}$ regardless of which specific rows are drawn.
+Crucially, this concentration holds irrespective of inter-client heterogeneity: the heterogeneous GMM parameters are already encoded in the fixed pool $\{X_{\mathrm{raw},i}\}$, and every subsample inherits the same row-level heterogeneity.
+Consequently, the design-conditional RE from \eqref{eq:2.4} evaluated on any single subsample is virtually identical to the RE averaged over $R$ subsamples, which is why the two curves coincide.
+
+\paragraph{Why the DGSRHT curves differ.}
+For DGSRHT, the situation is fundamentally different.
+At each repetition, the simulation draws fresh Rademacher signs $\mathbf{D}^{(r)}$, fresh local permutations $\sigma^{(r)}$, and a fresh subsampling mask $\Omega^{(r)}$ (all controlled by the per-repetition random seed).
+The output design is a global linear transformation of the fixed padded data (Proposition~\ref{prop:global-srht}):
+\[
+  \tilde{X}_{\star}^{(r)}
+  = \sqrt{s}\,(H_K\otimes I_r)(I_K\otimes R_{\Omega^{(r)}})\,H_{Km}\,D^{\star(r)}\,X^{\star}.
+\]
+Because the Hadamard transform globally couples all $Km$ rows, each output row is a weighted sum of \emph{every} original row with signs determined by $D^{\star(r)}$.
+Changing even one Rademacher sign alters every output row, so $\tilde{X}_{\star}^{(r)}$ is a genuinely different matrix at each repetition---in contrast to uniform sampling, which merely selects a different subset of unchanged rows from a fixed pool.
+
+The design-conditional theoretical benchmark is computed from \emph{one} realization $\tilde{X}_{\star}^{(0)}$ and \emph{one} random partition $\pi^{(0)}$:
+\[
+  \mathrm{RE}_{\mathrm{theory}}(K')
+  = \frac{\operatorname{tr}\bigl[(\tilde{X}_{\star}^{(0)\top}\tilde{X}_{\star}^{(0)})^{-1}\bigr]}
+         {\displaystyle\sum_{i=1}^{K'}\frac{1}{K'^{2}}\,
+           \operatorname{tr}\bigl[(\tilde{X}_{\star,i}^{(0)\top}\tilde{X}_{\star,i}^{(0)})^{-1}\bigr]}.
+\]
+By Jensen's inequality applied to the convex function $f(M)=\operatorname{tr}(M^{-1})$,
+\[
+  \frac{1}{K'}\sum_{i}\operatorname{tr}\bigl[(X_i^{\top}X_i)^{-1}\bigr]
+  \;\ge\;
+  \operatorname{tr}\!\Bigl[\Bigl(\frac{1}{K'}\sum_{i}X_i^{\top}X_i\Bigr)^{\!-1}\Bigr]
+  = K'\operatorname{tr}\bigl[(X^{\top}X)^{-1}\bigr],
+\]
+so $\mathrm{RE}\le 1$ for any fixed design and partition, with equality if and only if all block Gram matrices $X_i^{\top}X_i$ are identical.
+For a single DGSRHT realization, the RHT greatly reduces but does not eliminate the block heterogeneity---the residual is precisely the finite-sample bound \eqref{eq:4.5}.
+This gives the theoretical curve its slight deviation below~$1$.
+
+The empirical curve, by contrast, averages the MSE over $R$ repetitions that each use a \emph{different} Rademacher realization $(D^{(r)},\Omega^{(r)},\sigma^{(r)})$.
+Each realization produces a different pattern of block Gram-matrix imbalance, and because the Rademacher signs randomize the spectral orientation of these imbalances, they partially cancel upon averaging.
+The effective Jensen gap after averaging over many realizations is therefore smaller than the gap for any single realization, pushing the empirical RE closer to~$1$.
+
+\paragraph{Summary.}
+The theory--experiment match for uniform sampling and the gap for DGSRHT share a common explanation: the nature of the per-trial randomness.
+Uniform sampling draws different rows from a \emph{fixed pool}---the Gram matrix barely changes, so one trial's RE equals the average.
+DGSRHT applies a different \emph{random linear transformation} at each trial---the Gram matrix varies meaningfully, and averaging over these transformations reduces the Jensen gap beyond what any single realization achieves.
+The DGSRHT gap is not a deficiency; it reflects a finite-sample residual that \eqref{eq:4.5} predicts will vanish as $n\to\infty$, and the fact that the empirical RE exceeds the single-realization theoretical benchmark provides additional evidence that the Hadamard transform is effectively stabilizing the block Gram matrices.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\textwidth]{full_result.png}
+  \caption{Relative efficiency versus number of partition machines $K'$ under the fully heterogeneous GMM ($n=30{,}000$, $p=200$, $K=16$, $s=4$). Solid lines: empirical RE averaged over $R=50$ repetitions. Dashed lines: design-conditional theoretical RE from \eqref{eq:2.4}. DGSRHT (green/red) maintains RE near $1.0$ across all $K'$; uniform sampling (blue/orange) decays sharply as $K'$ grows.}
+  \label{fig:re-full}
+\end{figure}
+
+\subsection{Discussion of experimental limitations}
+
+The experiment above fixes one $(n,p)$ pair and one GMM configuration. Corollary~\ref{corollary:main} is an asymptotic statement requiring $\ln n = o(p)$ and $p\ln p = o(n)$; the chosen $(n,p)=(30{,}000,200)$ satisfies these conditions comfortably ($\ln n\approx 10.3 \ll 200$ and $p\ln p\approx 1{,}060 \ll 30{,}000$). As noted in Section~4.2, when $p$ grows linearly with $n$ the theoretical bound \eqref{eq:4.6} no longer guarantees convergence, and we expect the DGSRHT advantage to diminish in that regime.
 
 \section{Discussion}
 We would further focus on the proof of similar main result of Corollary~\ref{corollary:main} in the future work, and consider the case that $p$ is comparable to $n$ in the case that $p = c_1 n$ for any constant $c_1$. This is the case $p$ could also tends to infinity when $n$ is tending to infinity with the same level of infinite large. And we would try to use the method of integrated randomized matrix theory as a whole to prove it.
