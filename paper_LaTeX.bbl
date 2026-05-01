@@ -1,0 +1,398 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{cherapanamjeri2022uniformapproximationsrandomizedhadamard}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=4d513e6f4f70d6741f4581bb7f187f30}{%
+           family={Cherapanamjeri},
+           familyi={C\bibinitperiod},
+           given={Yeshwanth},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=dfa4aec70746cf9d279cb95a127118c9}{%
+           family={Nelson},
+           familyi={N\bibinitperiod},
+           given={Jelani},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{fullhash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{fullhashraw}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{bibnamehash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{authorbibnamehash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{authornamehash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{authorfullhash}{012862e6d449783e0c2dfae27d2410a8}
+      \strng{authorfullhashraw}{012862e6d449783e0c2dfae27d2410a8}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.LG}
+      \field{eprinttype}{arXiv}
+      \field{title}{Uniform Approximations for Randomized Hadamard Transforms with Applications}
+      \field{year}{2022}
+      \verb{eprint}
+      \verb 2203.01599
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2203.01599
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2203.01599
+      \endverb
+    \endentry
+    \entry{dereziński2023algorithmicgaussianizationsketchingconverting}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=258ed99436249e27450f30acb58805b6}{%
+           family={Dereziński},
+           familyi={D\bibinitperiod},
+           given={Michał},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{258ed99436249e27450f30acb58805b6}
+      \strng{fullhash}{258ed99436249e27450f30acb58805b6}
+      \strng{fullhashraw}{258ed99436249e27450f30acb58805b6}
+      \strng{bibnamehash}{258ed99436249e27450f30acb58805b6}
+      \strng{authorbibnamehash}{258ed99436249e27450f30acb58805b6}
+      \strng{authornamehash}{258ed99436249e27450f30acb58805b6}
+      \strng{authorfullhash}{258ed99436249e27450f30acb58805b6}
+      \strng{authorfullhashraw}{258ed99436249e27450f30acb58805b6}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.LG}
+      \field{eprinttype}{arXiv}
+      \field{title}{Algorithmic Gaussianization through Sketching: Converting Data into Sub-gaussian Random Designs}
+      \field{year}{2023}
+      \verb{eprint}
+      \verb 2206.10291
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2206.10291
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2206.10291
+      \endverb
+    \endentry
+    \entry{dobriban2019asymptoticssketchingsquaresregression}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=facc1c652916b234e238c4cd8bb5ff9d}{%
+           family={Dobriban},
+           familyi={D\bibinitperiod},
+           given={Edgar},
+           giveni={E\bibinitperiod}}}%
+        {{hash=f32675b4e37cc9620277c4959f0da04a}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Sifan},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{fullhash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{fullhashraw}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{bibnamehash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{authorbibnamehash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{authornamehash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{authorfullhash}{ef8191a89aa89166abde5e5c87c43f99}
+      \strng{authorfullhashraw}{ef8191a89aa89166abde5e5c87c43f99}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.ST}
+      \field{eprinttype}{arXiv}
+      \field{title}{Asymptotics for Sketching in Least Squares Regression}
+      \field{year}{2019}
+      \verb{eprint}
+      \verb 1810.06089
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1810.06089
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1810.06089
+      \endverb
+    \endentry
+    \entry{dobriban2022distributedlinearregressionaveraging}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=facc1c652916b234e238c4cd8bb5ff9d}{%
+           family={Dobriban},
+           familyi={D\bibinitperiod},
+           given={Edgar},
+           giveni={E\bibinitperiod}}}%
+        {{hash=2ea3856122037727874d4483052ff9d7}{%
+           family={Sheng},
+           familyi={S\bibinitperiod},
+           given={Yue},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{5aa60ae9e14fa026798016559f062097}
+      \strng{fullhash}{5aa60ae9e14fa026798016559f062097}
+      \strng{fullhashraw}{5aa60ae9e14fa026798016559f062097}
+      \strng{bibnamehash}{5aa60ae9e14fa026798016559f062097}
+      \strng{authorbibnamehash}{5aa60ae9e14fa026798016559f062097}
+      \strng{authornamehash}{5aa60ae9e14fa026798016559f062097}
+      \strng{authorfullhash}{5aa60ae9e14fa026798016559f062097}
+      \strng{authorfullhashraw}{5aa60ae9e14fa026798016559f062097}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.ST}
+      \field{eprinttype}{arXiv}
+      \field{title}{Distributed linear regression by averaging}
+      \field{year}{2022}
+      \verb{eprint}
+      \verb 1810.00412
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1810.00412
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1810.00412
+      \endverb
+    \endentry
+    \entry{pilanci2014randomizedsketchesconvexprograms}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=5d26b754e75f4129f15bf3882c34f70e}{%
+           family={Pilanci},
+           familyi={P\bibinitperiod},
+           given={Mert},
+           giveni={M\bibinitperiod}}}%
+        {{hash=7eb03239453694f59946ad6008e9f0ab}{%
+           family={Wainwright},
+           familyi={W\bibinitperiod},
+           given={Martin\bibnamedelima J.},
+           giveni={M\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{fullhash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{fullhashraw}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{bibnamehash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{authorbibnamehash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{authornamehash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{authorfullhash}{45522d6eb02ebce2a0d678963cfc79cc}
+      \strng{authorfullhashraw}{45522d6eb02ebce2a0d678963cfc79cc}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.IT}
+      \field{eprinttype}{arXiv}
+      \field{title}{Randomized Sketches of Convex Programs with Sharp Guarantees}
+      \field{year}{2014}
+      \verb{eprint}
+      \verb 1404.7203
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1404.7203
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1404.7203
+      \endverb
+    \endentry
+    \entry{Singh2023active}{misc}{}{}
+      \name{author}{3}{}{%
+        {{hash=cb9bb8e922109bf855cac2fa8e287e89}{%
+           family={Singh},
+           familyi={S\bibinitperiod},
+           given={Harvineet},
+           giveni={H\bibinitperiod}}}%
+        {{hash=9b13abfbab0577842dff6c7f6b610873}{%
+           family={Musco},
+           familyi={M\bibinitperiod},
+           given={Christopher},
+           giveni={C\bibinitperiod}}}%
+        {{hash=f4699b8ae9752a9bc51ad184a9bfe72f}{%
+           family={Chunara},
+           familyi={C\bibinitperiod},
+           given={Rumi},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{fullhash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{fullhashraw}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{bibnamehash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{authorbibnamehash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{authornamehash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{authorfullhash}{b1f97179a410cccdf77f99676c97bc81}
+      \strng{authorfullhashraw}{b1f97179a410cccdf77f99676c97bc81}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://realworldml.github.io/files/cr/paper55.pdf}}
+      \field{title}{Active Linear Regression in the Online Setting via Leverage Score Sampling}
+      \field{year}{2023}
+    \endentry
+    \entry{tropp2011improvedanalysissubsampledrandomized}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=74341ae37266ceb0c254df25bcf296cd}{%
+           family={Tropp},
+           familyi={T\bibinitperiod},
+           given={Joel\bibnamedelima A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \strng{namehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{fullhash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{fullhashraw}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{bibnamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorbibnamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authornamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorfullhash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorfullhashraw}{74341ae37266ceb0c254df25bcf296cd}
+      \field{extraname}{1}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.NA}
+      \field{eprinttype}{arXiv}
+      \field{title}{Improved analysis of the subsampled randomized Hadamard transform}
+      \field{year}{2011}
+      \verb{eprint}
+      \verb 1011.1595
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1011.1595
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1011.1595
+      \endverb
+    \endentry
+    \entry{Tropp_2011}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=74341ae37266ceb0c254df25bcf296cd}{%
+           family={Tropp},
+           familyi={T\bibinitperiod},
+           given={Joel\bibnamedelima A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \list{publisher}{2}{%
+        {Springer Science}%
+        {Business Media LLC}%
+      }
+      \strng{namehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{fullhash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{fullhashraw}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{bibnamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorbibnamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authornamehash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorfullhash}{74341ae37266ceb0c254df25bcf296cd}
+      \strng{authorfullhashraw}{74341ae37266ceb0c254df25bcf296cd}
+      \field{extraname}{2}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{1615-3383}
+      \field{journaltitle}{Foundations of Computational Mathematics}
+      \field{month}{8}
+      \field{number}{4}
+      \field{title}{User-Friendly Tail Bounds for Sums of Random Matrices}
+      \field{volume}{12}
+      \field{year}{2011}
+      \field{pages}{389\bibrangedash 434}
+      \range{pages}{46}
+      \verb{doi}
+      \verb 10.1007/s10208-011-9099-z
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1007/s10208-011-9099-z
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1007/s10208-011-9099-z
+      \endverb
+    \endentry
+    \entry{vershynin2018high}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=711c5aa2fe76a4ff674a2c6e2c7a2d91}{%
+           family={Vershynin},
+           familyi={V\bibinitperiod},
+           given={Roman},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{fullhash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{fullhashraw}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{bibnamehash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{authorbibnamehash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{authornamehash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{authorfullhash}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \strng{authorfullhashraw}{711c5aa2fe76a4ff674a2c6e2c7a2d91}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{High-Dimensional Probability}
+      \field{year}{2018}
+    \endentry
+    \entry{wang2018sketchedridgeregressionoptimization}{misc}{}{}
+      \name{author}{3}{}{%
+        {{hash=b28d1dec4cc043fe81b3d9482136b51b}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Shusen},
+           giveni={S\bibinitperiod}}}%
+        {{hash=2d305dca6a2e4c348694a67bd15a0c9a}{%
+           family={Gittens},
+           familyi={G\bibinitperiod},
+           given={Alex},
+           giveni={A\bibinitperiod}}}%
+        {{hash=6428c5852da0dfbdd50e39418c9571bf}{%
+           family={Mahoney},
+           familyi={M\bibinitperiod},
+           given={Michael\bibnamedelima W.},
+           giveni={M\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+      }
+      \strng{namehash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{fullhash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{fullhashraw}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{bibnamehash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{authorbibnamehash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{authornamehash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{authorfullhash}{e8bf8fcff7bc59b038321159cf937418}
+      \strng{authorfullhashraw}{e8bf8fcff7bc59b038321159cf937418}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{stat.ML}
+      \field{eprinttype}{arXiv}
+      \field{title}{Sketched Ridge Regression: Optimization Perspective, Statistical Perspective, and Model Averaging}
+      \field{year}{2018}
+      \verb{eprint}
+      \verb 1702.04837
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/1702.04837
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/1702.04837
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

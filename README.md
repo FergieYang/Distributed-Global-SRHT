@@ -25,7 +25,7 @@ This repository contains the paper and simulation code for a research project on
 
 ## Simulation Results
 
-The simulation (`Fergie/simulation.ipynb`) validates the theoretical findings under three heterogeneity scenarios with parameters `n=30,000`, `k=16` clients, `p=200` features, and subsampling proportion `1/s = 0.25`:
+The simulation (`simulation.ipynb`) validates the theoretical findings under three heterogeneity scenarios with parameters `n=30,000`, `k=16` clients, `p=200` features, and subsampling proportion `1/s = 0.25`:
 
 ### Key Findings
 
@@ -43,7 +43,6 @@ The simulation (`Fergie/simulation.ipynb`) validates the theoretical findings un
 ## Repository Structure
 
 ```
-Fergie/
 ├── paper_LaTeX.tex              # Main paper (LaTeX source)
 ├── paper_LaTeX.pdf              # Compiled paper
 ├── simulation.ipynb             # Simulation notebook (Python/NumPy)
@@ -52,14 +51,14 @@ Fergie/
 ├── biblio.bib                   # Bibliography
 ├── sample.bib                   # Additional references
 ├── nejsds.cls                   # Journal style file
-└── nessart-number.bst           # BibTeX style
+├── nessart-number.bst           # BibTeX style
+└── full_result.png              # Simulation result plot
 ```
 
 ## How to Run the Simulation
 
 ```bash
 pip install numpy matplotlib jupyter
-cd Fergie
 jupyter notebook simulation.ipynb
 ```
 

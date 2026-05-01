@@ -1,5 +1,18 @@
 [0] Config.pm:308> INFO - This is Biber 2.20
 [0] Config.pm:311> INFO - Logfile is 'paper_LaTeX.blg'
-[26] biber-darwin:340> INFO - === Mon Apr  6, 2026, 21:13:29
-[106] Utils.pm:410> ERROR - Cannot find 'paper_LaTeX.bcf'!
-[106] Biber.pm:136> INFO - ERRORS: 1
+[24] biber-darwin:340> INFO - === Wed Apr 15, 2026, 13:40:00
+[31] Biber.pm:420> INFO - Reading 'paper_LaTeX.bcf'
+[59] Biber.pm:994> INFO - Found 10 citekeys in bib section 0
+[66] Biber.pm:4463> INFO - Processing section 0
+[70] Biber.pm:4654> INFO - Looking for bibtex file 'sample.bib' for section 0
+[71] bibtex.pm:1713> INFO - LaTeX decoding ...
+[74] bibtex.pm:1519> INFO - Found BibTeX data source 'sample.bib'
+[94] Biber.pm:4654> INFO - Looking for bibtex file 'biblio.bib' for section 0
+[95] bibtex.pm:1713> INFO - LaTeX decoding ...
+[97] bibtex.pm:1519> INFO - Found BibTeX data source 'biblio.bib'
+[106] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[106] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[106] Biber.pm:4283> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[106] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[111] bbl.pm:676> INFO - Writing 'paper_LaTeX.bbl' with encoding 'UTF-8'
+[113] bbl.pm:779> INFO - Output to paper_LaTeX.bbl
